@@ -9,7 +9,7 @@ namespace ScheduleOptimization.Models
         [Key]
         public Guid EntryId { get; set; }= Guid.NewGuid();
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public Card Card { get; set; }
+        public Guid CardId { get; set; }
         public Status Status { get; set; }
     }
 }
