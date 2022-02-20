@@ -35,6 +35,11 @@ namespace ScheduleOptimization.Services
                 }
             }
 
+            if (countPair > headToHeadLessons.Count && countPair > remoteLessons.Count)
+            {
+                countPair = headToHeadLessons.Count;
+                
+            }
             foreach (var headToHeadLesson in headToHeadLessons.GetRange(1, countPair))
             {
                 ChangeLessonsStartAndEndTime(headToHeadLesson, startLessons, endLessons);

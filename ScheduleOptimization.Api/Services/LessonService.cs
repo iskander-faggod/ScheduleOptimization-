@@ -48,6 +48,9 @@ namespace ScheduleOptimization.Services
             if (person.PersonType ==  PersonType.Bachelor)
                 throw new ArgumentException($"{nameof(person)} can't be coach");
             var lesson = await _context.Lessons.FindAsync(lessonId);
+            if (lesson is null)
+                throw new ArgumentException($"{nameof(lesson)} can't be null");
+            
             // Магистры и аспиранты не могут вести пары сами у себя.
             if (lesson.Group.Persons[0].PersonType == PersonType.Master && person.PersonType == PersonType.Master)
                 throw new ArgumentException($"{nameof(person)} can't be coach");
@@ -57,6 +60,20 @@ namespace ScheduleOptimization.Services
             await _context.SaveChangesAsync();
             return new OkResult();
         }
+        
+        public async Task<ActionResult<Lesson>> AddGroupToLesson(Guid lessonId, Guid groupId)
+        {
+            var lesson = await _context.Lessons.FindAsync(lessonId);
+            if (lesson is null)
+                throw new ArgumentException($"{nameof(lesson)} can't be null");
+            var group = await _context.Groups.FindAsync(groupId);
+            if (group is null)
+                throw new ArgumentException($"{nameof(group)} can't be null");
+            lesson.Group = group;
+            await _context.SaveChangesAsync();
+            return new OkResult();
+        }
+
 
         public async Task<ActionResult<Lesson>> DeleteLesson(Guid lessonId)
         {

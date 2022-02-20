@@ -40,7 +40,6 @@ namespace ScheduleOptimization.Controllers
             var lesson = new Lesson()
             {
                 EndLesson = lessonDto.EndLesson,
-                Group = null,
                 LessonId = Guid.NewGuid(),
                 StartLesson = lessonDto.StartLesson,
             };
@@ -52,9 +51,20 @@ namespace ScheduleOptimization.Controllers
         }
         
         [HttpPost("coach")]
-        public async Task<ActionResult<Lesson>> AddCoach([FromQuery]Guid lessonId, [FromBody] Person person)
+        public async Task<ActionResult<Lesson>> AddCoach([FromQuery]Guid lessonId, [FromBody] AddCoachDto coachDto)
         {
-           return await _lessonService.AddCoach(lessonId, person);
+            var person = new Person()
+            {
+                PersonId = Guid.NewGuid(),
+                PersonType = coachDto.PersonType,
+            };
+            return await _lessonService.AddCoach(lessonId, person);
+        }
+        
+        [HttpPost("group")]
+        public async Task<ActionResult<Lesson>> AddGroup([FromQuery]Guid lessonId, [FromQuery] Guid groupId)
+        {
+            return await _lessonService.AddGroupToLesson(lessonId, groupId);
         }
 
         [HttpDelete("{id}")]
