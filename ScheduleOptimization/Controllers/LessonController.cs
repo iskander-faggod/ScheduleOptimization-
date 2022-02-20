@@ -6,103 +6,61 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ScheduleOptimization.Context;
+using ScheduleOptimization.DTO;
 using ScheduleOptimization.Models;
+using ScheduleOptimization.Services.Interfaces;
 
 namespace ScheduleOptimization.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Lesson")]
     [ApiController]
     public class LessonController : ControllerBase
     {
-        private readonly ScheduleContext _context;
+        private readonly ILessonService _lessonService;
 
-        public LessonController(ScheduleContext context)
+        public LessonController(ILessonService lessonService)
         {
-            _context = context;
+            _lessonService = lessonService;
         }
 
-        // GET: api/Lesson
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Lesson>>> GetLessons()
         {
-            return await _context.Lessons.ToListAsync();
+            return await _lessonService.GetAllLessons();
         }
 
-        // GET: api/Lesson/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Lesson>> GetLesson(Guid id)
         {
-            var lesson = await _context.Lessons.FindAsync(id);
-
-            if (lesson == null)
-            {
-                return NotFound();
-            }
-
-            return lesson;
+            return await _lessonService.GetLessonById(id);
         }
 
-        // PUT: api/Lesson/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutLesson(Guid id, Lesson lesson)
-        {
-            if (id != lesson.LessonId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(lesson).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!LessonExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Lesson
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Lesson>> PostLesson(Lesson lesson)
+        public async Task<ActionResult<Lesson>> PostLesson(CreateLessonArguments lessonDto)
         {
-            _context.Lessons.Add(lesson);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetLesson", new { id = lesson.LessonId }, lesson);
+            var lesson = new Lesson()
+            {
+                EndLesson = lessonDto.EndLesson,
+                Group = null,
+                LessonId = Guid.NewGuid(),
+                StartLesson = lessonDto.StartLesson,
+            };
+            if (lesson.StartLesson > lesson.EndLesson)
+                throw new ArgumentException(
+                    $"Start of lesson - {lesson.StartLesson}" +
+                    $"can't be more then end of lesson - {lesson.EndLesson} ");
+            return await _lessonService.CreateLesson(lesson);
         }
 
-        // DELETE: api/Lesson/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLesson(Guid id)
+        public async Task<ActionResult<Lesson>> DeleteLesson(Guid id)
         {
-            var lesson = await _context.Lessons.FindAsync(id);
-            if (lesson == null)
-            {
-                return NotFound();
-            }
-
-            _context.Lessons.Remove(lesson);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return await _lessonService.DeleteLesson(id);
         }
 
         private bool LessonExists(Guid id)
         {
-            return _context.Lessons.Any(e => e.LessonId == id);
+            return _lessonService.LessonExists(id);
         }
     }
 }

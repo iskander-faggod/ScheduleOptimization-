@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ScheduleOptimization.Context;
+using ScheduleOptimization.DTO;
 using ScheduleOptimization.Models;
 using ScheduleOptimization.Services;
 using ScheduleOptimization.Services.Interfaces;
@@ -37,10 +38,29 @@ namespace ScheduleOptimization.Controllers
 
         
         [HttpPost]
-        public async Task<ActionResult<Entry>> PostEntry(Entry entry)
+        public async Task<ActionResult<Entry>> PostEntry([FromBody] CreateEntryArguments entryDto)
         {
+            var entry = new Entry()
+            {
+                EntryId = Guid.NewGuid(),
+                CreatedAt = DateTime.Now,
+                CardId = entryDto.CardId,
+                Status = entryDto.Status
+            };
             await _entryService.CreateEntry(entry);
             return entry;
+        }
+        
+        [HttpPost("in")]
+        public async Task EntryIn([FromQuery] Guid personId, [FromQuery] Guid entryId)
+        {
+            await _entryService.In(personId, entryId);
+        }
+        
+        [HttpPost("out")]
+        public async Task EntryOut([FromQuery] Guid personId, [FromQuery] Guid entryId)
+        {
+            await _entryService.Out(personId, entryId);
         }
 
         [HttpDelete("{id}")]

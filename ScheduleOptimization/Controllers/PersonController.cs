@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ScheduleOptimization.Context;
+using ScheduleOptimization.DTO;
 using ScheduleOptimization.Models;
+using ScheduleOptimization.Services.Interfaces;
 
 namespace ScheduleOptimization.Controllers
 {
@@ -14,95 +16,47 @@ namespace ScheduleOptimization.Controllers
     [ApiController]
     public class PersonController : ControllerBase
     {
-        private readonly ScheduleContext _context;
+        private readonly IPersonService _personService;
 
-        public PersonController(ScheduleContext context)
+        public PersonController(IPersonService personService)
         {
-            _context = context;
+            _personService = personService;
         }
-
-        // GET: api/Person
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Person>>> GetPersons()
         {
-            return await _context.Persons.ToListAsync();
+            return await _personService.GetAllPersons();
         }
 
-        // GET: api/Person/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Person>> GetPerson(Guid id)
         {
-            var person = await _context.Persons.FindAsync(id);
-
-            if (person == null)
-            {
-                return NotFound();
-            }
-
-            return person;
+            return await _personService.GetPersonById(id);
         }
-
-        // PUT: api/Person/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPerson(Guid id, Person person)
-        {
-            if (id != person.PersonId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(person).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PersonExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Person
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
+        
         [HttpPost]
-        public async Task<ActionResult<Person>> PostPerson(Person person)
+        public async Task<ActionResult<Person>> PostPerson(CreatePersonArguments personDto)
         {
-            _context.Persons.Add(person);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPerson", new { id = person.PersonId }, person);
+            var person = new Person()
+            {
+                Entry = null,
+                PersonId = Guid.NewGuid(),
+                PersonType = personDto.PersonType
+            };
+            return await _personService.CreatePerson(person);
         }
 
-        // DELETE: api/Person/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePerson(Guid id)
+        public async Task<ActionResult<Person>> DeletePerson(Guid id)
         {
-            var person = await _context.Persons.FindAsync(id);
-            if (person == null)
-            {
-                return NotFound();
-            }
-
-            _context.Persons.Remove(person);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return await _personService.DeletePerson(id);
         }
 
         private bool PersonExists(Guid id)
         {
-            return _context.Persons.Any(e => e.PersonId == id);
+            return _personService.PersonExists(id);
         }
     }
 }

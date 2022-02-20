@@ -9,5 +9,6 @@ namespace ScheduleOptimization.Models
         [Key]
         public Guid PersonId { get; set; }
         public PersonType PersonType { get; set; }
+        public Entry Entry { get; set; }
     }
 }

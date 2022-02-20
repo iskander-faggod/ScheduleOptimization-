@@ -1,17 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ScheduleOptimization.Context;
+using ScheduleOptimization.DTO;
 using ScheduleOptimization.Models;
 using ScheduleOptimization.Services.Interfaces;
 
 namespace ScheduleOptimization.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Group")]
     [ApiController]
     public class GroupController : ControllerBase
     {
@@ -29,7 +26,6 @@ namespace ScheduleOptimization.Controllers
             return await _groupService.GetAllGroups();
         }
 
-        // GET: api/Group/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Group>> GetGroup(Guid id)
         {
@@ -37,12 +33,24 @@ namespace ScheduleOptimization.Controllers
         }
         
         [HttpPost]
-        public async Task<ActionResult<Group>> PostGroup(Group @group)
+        public async Task<ActionResult<Group>> PostGroup(CreateGroupArguments groupDto)
         {
+            var group = new Group()
+            {
+                CourseNumber = groupDto.CourseNumber,
+                GroupId = Guid.NewGuid(),
+                GroupName = groupDto.GroupName,
+                Students = new List<Person>()
+            };
             return await _groupService.CreateGroup(group);
         }
 
-        // DELETE: api/Group/5
+        [HttpPost("add-student")]
+        public async Task AddStudent([FromQuery]Guid personId, [FromQuery] Guid groupId)
+        {
+            await _groupService.AddStudentInGroup(personId, groupId);
+        }
+        
         [HttpDelete("{id}")]
         public async Task DeleteGroup(Guid id)
         {

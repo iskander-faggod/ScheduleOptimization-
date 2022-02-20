@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using ScheduleOptimization.Context;
 using ScheduleOptimization.Models;
 using ScheduleOptimization.Services.Interfaces;
+using ScheduleOptimization.Types;
 
 namespace ScheduleOptimization.Services
 {
@@ -52,6 +53,24 @@ namespace ScheduleOptimization.Services
             _context.Groups.Remove(group);
             await _context.SaveChangesAsync();
             return new OkResult();
+        }
+
+        public async Task AddStudentInGroup(Guid studentId, Guid groupId)
+        {
+            var group = await _context.Groups.FindAsync(groupId);
+            var student = await _context.Persons.FindAsync(studentId);
+            if (group is null) 
+                throw new ArgumentException($"{nameof(group)} can't be null");
+            if (student is null)
+            {
+                throw new ArgumentException($"{nameof(student)} can't be null");
+            }
+            if (student.PersonType != PersonType.Bachelor)
+            {
+                throw new ArgumentException($"{nameof(student)} must be Bachelor");
+            }
+            group.Students.Add(student);
+            await _context.SaveChangesAsync();
         }
 
         public bool GroupExists(Guid groupId)

@@ -12,6 +12,8 @@ namespace ScheduleOptimization.Services.Interfaces
         Task<ActionResult<Entry>> GetEntryById(Guid entryId);
         Task<ActionResult<Entry>> CreateEntry(Entry entry);
         Task<ActionResult<Entry>> DeleteEntry(Guid entryId);
-        bool EntryExists(Guid entryId);
+        Task In(Guid personId, Guid entryId);
+        Task Out(Guid personId, Guid entryId);
+        bool EntryExists(Guid entryId); 
     }
 }

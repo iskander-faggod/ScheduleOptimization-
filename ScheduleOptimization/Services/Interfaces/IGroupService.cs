@@ -12,6 +12,7 @@ namespace ScheduleOptimization.Services.Interfaces
         Task<ActionResult<Group>> GetGroupById(Guid groupId);
         Task<ActionResult<Group>> CreateGroup(Group group);
         Task<ActionResult<Group>> DeleteGroup(Guid groupId);
+        Task AddStudentInGroup(Guid studentId, Guid groupId);
         bool GroupExists(Guid groupId);
     }
 }

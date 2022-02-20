@@ -40,6 +40,8 @@ namespace ScheduleOptimization
             });
             services.AddTransient<IEntryService, EntryService>();
             services.AddTransient<IGroupService, GroupService>();
+            services.AddTransient<ILessonService, LessonService>();
+            services.AddTransient<IPersonService, PersonService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

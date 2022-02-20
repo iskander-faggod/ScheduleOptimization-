@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using ScheduleOptimization.Context;
 using ScheduleOptimization.Models;
 using ScheduleOptimization.Services.Interfaces;
+using ScheduleOptimization.Types;
 
 
 namespace ScheduleOptimization.Services
@@ -54,7 +55,40 @@ namespace ScheduleOptimization.Services
             await _context.SaveChangesAsync();
             return new OkResult();
         }
+
+        public async Task In(Guid personId, Guid entryId)
+        {
+            if (personId == Guid.Empty)
+                throw new ArgumentException($"{nameof(personId)} can't be empty");
+            if (entryId == Guid.Empty)
+                throw new ArgumentException($"{nameof(entryId)} can't be empty");
+            var person = await _context.Persons.FindAsync(personId);
+            if (person is null)
+                throw new ArgumentException($"{nameof(person)} can't be null");
+            var entry = await _context.Entries.FindAsync(entryId);
+            if (entry is null) 
+                throw new ArgumentException($"{nameof(entry)} can't be null");
+            person.Entry = entry;
+            entry.Status = Status.Entered;
+            await _context.SaveChangesAsync();
+        }
         
+        public async Task Out(Guid personId, Guid entryId)
+        {
+            if (personId == Guid.Empty)
+                throw new ArgumentException($"{nameof(personId)} can't be empty");
+            if (entryId == Guid.Empty)
+                throw new ArgumentException($"{nameof(entryId)} can't be empty");
+            var person = await _context.Persons.FindAsync(personId);
+            if (person is null)
+                throw new ArgumentException($"{nameof(person)} can't be null");
+            var entry = await _context.Entries.FindAsync(entryId);
+            if (entry is null) 
+                throw new ArgumentException($"{nameof(entry)} can't be null");
+            entry.Status = Status.Out;
+            await _context.SaveChangesAsync();
+        }
+
         public bool EntryExists(Guid entryId)
         {
             if (entryId == Guid.Empty)
