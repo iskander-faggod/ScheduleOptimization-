@@ -9,7 +9,7 @@ namespace ScheduleOptimization.Services.Interfaces
     {
         Task<ReturnSchedule> OptimizeSchedule(DateTime startLessons, DateTime endLessons, int countPair);
 
-        int PersonsPercent(Group @group);
+        Task<int> PersonsPercent(Group @group);
 
         void ChangeLessonsStartAndEndTime(Lesson lesson, DateTime startLessons, DateTime endLessons);
     }

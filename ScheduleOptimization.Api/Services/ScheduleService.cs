@@ -20,12 +20,12 @@ namespace ScheduleOptimization.Services
 
         public async Task<ReturnSchedule> OptimizeSchedule(DateTime startLessons, DateTime endLessons, int countPair)
         {
-            var allLessons = _context.Lessons;
+            var allLessons = _context.Lessons.ToList();
             var headToHeadLessons = new List<Lesson>();
             var remoteLessons = new List<Lesson>();
             foreach (var lesson in allLessons)
             {
-                if (PersonsPercent(lesson.Group) <= 10)
+                if (await PersonsPercent(lesson.Group) <= 10)
                 {
                     headToHeadLessons.Add(lesson);
                 }
@@ -66,7 +66,7 @@ namespace ScheduleOptimization.Services
             lesson.EndLesson = newEnd;
         }
         
-        public int PersonsPercent(Group @group)
+        public async Task<int> PersonsPercent(Group @group)
         {
             // Считаем сколько людей всего в стенах университета 
             var countOfPersons = _context.Entries
