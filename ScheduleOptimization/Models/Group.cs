@@ -10,6 +10,6 @@ namespace ScheduleOptimization.Models
         public Guid GroupId { get; set; }
         public string GroupName { get; set; }
         public int CourseNumber { get; set; }
-        public List<Person> Students { get; set; } = new List<Person>();
+        public List<Person> Persons { get; set; } = new List<Person>();
     }
 }

@@ -9,5 +9,6 @@ namespace ScheduleOptimization.Models
         public DateTime StartLesson { get; set; }
         public DateTime EndLesson { get; set; }
         public Group Group { get; set; }
+        public Person Coach { get; set; }
     }
 }

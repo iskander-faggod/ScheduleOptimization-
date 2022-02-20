@@ -40,7 +40,7 @@ namespace ScheduleOptimization.Controllers
                 CourseNumber = groupDto.CourseNumber,
                 GroupId = Guid.NewGuid(),
                 GroupName = groupDto.GroupName,
-                Students = new List<Person>()
+                Persons = new List<Person>()
             };
             return await _groupService.CreateGroup(group);
         }

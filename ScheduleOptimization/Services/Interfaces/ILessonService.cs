@@ -12,6 +12,7 @@ namespace ScheduleOptimization.Services.Interfaces
         Task<ActionResult<Lesson>> GetLessonById(Guid lessonId);
         Task<ActionResult<Lesson>> CreateLesson(Lesson lesson);
         Task<ActionResult<Lesson>> DeleteLesson(Guid lessonId);
+        Task<ActionResult<Lesson>> AddCoach(Guid lessonId, Person person);
         bool LessonExists(Guid lessonId);
     }
 }

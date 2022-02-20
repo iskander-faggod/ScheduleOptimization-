@@ -59,6 +59,9 @@ namespace ScheduleOptimization.Services
         {
             var group = await _context.Groups.FindAsync(groupId);
             var student = await _context.Persons.FindAsync(studentId);
+            // Мы не можем добавлять в учебные группы преподователей
+            if (student.PersonType == PersonType.Lectures )
+                throw new ArgumentException($"{nameof(student)} can't be lecture");
             if (group is null) 
                 throw new ArgumentException($"{nameof(group)} can't be null");
             if (student is null)
@@ -69,7 +72,7 @@ namespace ScheduleOptimization.Services
             {
                 throw new ArgumentException($"{nameof(student)} must be Bachelor");
             }
-            group.Students.Add(student);
+            group.Persons.Add(student);
             await _context.SaveChangesAsync();
         }
 

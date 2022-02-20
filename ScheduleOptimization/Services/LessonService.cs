@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using ScheduleOptimization.Context;
 using ScheduleOptimization.Models;
 using ScheduleOptimization.Services.Interfaces;
+using ScheduleOptimization.Types;
 
 namespace ScheduleOptimization.Services
 {
@@ -38,6 +39,21 @@ namespace ScheduleOptimization.Services
             if (lesson is null)
                 throw new ArgumentException($"{nameof(Lesson)} can't be null");
             _context.Lessons.Add(lesson);
+            await _context.SaveChangesAsync();
+            return new OkResult();
+        }
+        
+        public async Task<ActionResult<Lesson>> AddCoach(Guid lessonId, Person person)
+        {
+            if (person.PersonType ==  PersonType.Bachelor)
+                throw new ArgumentException($"{nameof(person)} can't be coach");
+            var lesson = await _context.Lessons.FindAsync(lessonId);
+            // Магистры и аспиранты не могут вести пары сами у себя.
+            if (lesson.Group.Persons[0].PersonType == PersonType.Master && person.PersonType == PersonType.Master)
+                throw new ArgumentException($"{nameof(person)} can't be coach");
+            if (lesson.Group.Persons[0].PersonType == PersonType.Postgraduate && person.PersonType == PersonType.Postgraduate)
+                throw new ArgumentException($"{nameof(person)} can't be coach");
+            lesson.Coach = person;
             await _context.SaveChangesAsync();
             return new OkResult();
         }

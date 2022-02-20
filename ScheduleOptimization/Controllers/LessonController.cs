@@ -51,6 +51,12 @@ namespace ScheduleOptimization.Controllers
                     $"can't be more then end of lesson - {lesson.EndLesson} ");
             return await _lessonService.CreateLesson(lesson);
         }
+        
+        [HttpPost("coach")]
+        public async Task<ActionResult<Lesson>> AddCoach([FromQuery]Guid lessonId, [FromBody] Person person)
+        {
+           return await _lessonService.AddCoach(lessonId, person);
+        }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<Lesson>> DeleteLesson(Guid id)
